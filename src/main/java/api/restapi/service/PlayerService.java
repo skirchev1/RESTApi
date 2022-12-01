@@ -41,7 +41,6 @@ public class PlayerService {
         }
 
         Player player = this.modelMapper.map(playerDto, Player.class);
-//        player.setBirthDate(new Date(playerDto.getBirthDate())); TODO: gurmi
         return playerRepo.save(player);
     }
 
@@ -53,10 +52,15 @@ public class PlayerService {
         Player player1 = playerRepo.findById(updatePlayerDTO.getId()).get();
         player1.setName(updatePlayerDTO.getName());
         player1.setCountry(updatePlayerDTO.getCountry());
-        if (!updatePlayerDTO.getBirthDate().equals("yyyy-MM-dd")){
-            throw new DataFormatException("Wrong date format! Date format must be: yyyy-MM-dd.");
+        Date date = new Date();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            date = simpleDateFormat.parse(updatePlayerDTO.getBirthDate());
+        } catch (Exception e) {
+            throw new DataFormatException("Wrong date");
         }
-        player1.setBirthDate(updatePlayerDTO.getBirthDate());
+
+        player1.setBirthDate(date);
         player1.setPosition(updatePlayerDTO.getPosition());
 
         return playerRepo.save(player1);
